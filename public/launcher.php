@@ -18,6 +18,10 @@ $command .= "php -f src/Appizy/appizy.php 'public/" . $appDir . $sourceFile . "'
 
 passthru($command, $status);
 
+// Delete source file
+unlink("public/$appDir$sourceFile");
+print ("Source file deleted from server<br />");
+
 if ($status !== 0) {
 
     print (
@@ -25,8 +29,6 @@ if ($status !== 0) {
     );
 
 } else {
-    // Delete source file
-    unlink("public/$appDir$sourceFile");
 
     // Create an archive containing the generated files
     $zip = new ZipArchive();
@@ -43,7 +45,7 @@ if ($status !== 0) {
     $files = array_diff(scandir( __DIR__ . '/'.$appDir), array('.','..'));
 
     foreach ($files as $file) {
-       $zip->addFile(__DIR__ . '/'.$appDir . '/'.$file);
+       $zip->addFile(__DIR__ . '/'.$appDir . '/'.$file, 'appizy/'.$file);
     }
 
     // Zip archive will be created only after closing object
@@ -53,7 +55,9 @@ if ($status !== 0) {
         unlink(__DIR__ . '/'.$appDir . '/'.$file);
     }
 
-    print ("<b>### Appizy done!</b>");
+    print ("<b>### Appizy done!</b><br /><br />");
+
+    print ('<span class="glyphicon glyphicon-save"></span>&nbsp;<a href="' . $appDir. "myappi.zip" . '">Download your converted files</a>');
 }
 
 function disable_ob()

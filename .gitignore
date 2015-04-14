@@ -3,3 +3,11 @@
 
 # Upload dir
 public/tmp
+
+# npm
+node_modules
+Gruntfile.js
+package.json
+
+# JS
+public/js/appizy-analytics.js
