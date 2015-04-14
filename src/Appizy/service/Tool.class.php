@@ -24,7 +24,7 @@ class Tool
     private $debug;
     private $error;
 
-    function __construct($debug = FALSE)
+    function __construct($debug = false)
     {
         $this->debug = $debug;
     }
@@ -113,10 +113,11 @@ class Tool
         foreach ($this->sheets as $sheet) {
             $names[] = $sheet->getName();
         }
+
         return $names;
     }
 
-    function render_validation($id, array $address = NULL)
+    function render_validation($id, array $address = null)
     {
         $sheets_name = $this->sheets_name();
 
@@ -194,24 +195,26 @@ class Tool
     function tool_get_sheet($sheet_index)
     {
         $sheets = $this->sheets;
-        $sheet = FALSE;
+        $sheet = false;
         if (array_key_exists($sheet_index, $sheets)) {
             $sheet = $sheets[$sheet_index];
         } else {
             $this->tool_error("Try to access unexistent sheet index:$sheet_index");
         }
+
         return $sheet;
     }
 
     function tool_get_cell($sheet_ind, $row_ind, $col_ind)
     {
-        $cell = FALSE;
+        $cell = false;
 
         $sheet = $this->tool_get_sheet($sheet_ind);
 
         if ($sheet) {
             $cell = $sheet->sheet_get_cell($row_ind, $col_ind);
         }
+
         return $cell;
     }
 
@@ -235,11 +238,11 @@ class Tool
     // Nettoie un tableau des feuilles, lignes et colonnes vides
     function tool_clean()
     {
-        $is_first_filled = FALSE;
+        $is_first_filled = false;
         $offset = 0;
 
         // On inverse les sheets
-        $sheets_reverse = array_reverse($this->sheets, TRUE);
+        $sheets_reverse = array_reverse($this->sheets, true);
 
         // On nettoie ensuite chaque sheet
         foreach ($sheets_reverse as $temp_sheet) {
@@ -250,7 +253,7 @@ class Tool
                 if ($temp_sheet->isEmptySheet()) {
                     $offset++;
                 } else {
-                    $is_first_filled = TRUE;
+                    $is_first_filled = true;
                 }
             endif;
 
@@ -258,7 +261,7 @@ class Tool
         // On supprime les $offset premi�res $sheet vides
         if ($offset > 0) $sheets_reverse = array_slice($sheets_reverse, $offset);
         // On inverse a nouveau et on affecte les sheets du tableau
-        $sheets = array_reverse($sheets_reverse, TRUE);
+        $sheets = array_reverse($sheets_reverse, true);
         $this->sheets = $sheets;
 
     }
@@ -268,7 +271,7 @@ class Tool
 
         $sections = array();
         $index = 0;
-        $is_first = TRUE;
+        $is_first = true;
         foreach ($this->sheets as $sheet) {
 
             if ($is_first) {
@@ -278,7 +281,7 @@ class Tool
             } else {
                 $sections[$sheet->get_id()] = $sheet->get_sheet_name();
             }
-            $is_first = FALSE;
+            $is_first = false;
             $index++;
         }
 
@@ -289,16 +292,16 @@ class Tool
         $html = appizy_render('bs-navigation.tpl.php', $elements);
 
 
-        $is_first = TRUE;
+        $is_first = true;
         foreach ($this->sheets as $sheet) {
             $html .= bs_grid($sheet, $is_first);
 
-            $is_first = FALSE;
+            $is_first = false;
 
             // Detects column common styles names
             $cols = $sheet->sheet_get_cols();
 
-            $is_first_col = TRUE;
+            $is_first_col = true;
             foreach ($cols as $col) {
                 $tmp_styles = $col->col_get_default_cell_style();
 
@@ -401,6 +404,7 @@ $('.navbar a').click(function (event) {
 
         $variables['style'] = $css;
         $variables['content'] = $html;
+
         //$variables['script'] = $script;
 
         return $variables;
@@ -474,22 +478,23 @@ $('li a').click(function (event) {
         $variables['style'] = $style;
         $variables['content'] = $html;
         $variables['script'] = $script;
+
         return $variables;
     }
 
     /**
      * Renders HTML of a tool
      */
-    function tool_render($pathfile = NULL, $level = 0, $options = array())
+    function tool_render($pathfile = null, $level = 0, $options = array())
     {
 
         // Debug
         $option_print_header = array_key_exists("print header", $options) ?
-            $options['print header'] == TRUE : FALSE;
+            $options['print header'] == true : false;
         $option_comptact_css = array_key_exists("compact css", $options) ?
-            $options['compact css'] == TRUE : FALSE;
+            $options['compact css'] == true : false;
         $option_jquery_tab = array_key_exists("jquery tab", $options) ?
-            $options['jquery tab'] == TRUE : FALSE;
+            $options['jquery tab'] == true : false;
         $option_freeze = array_key_exists("freeze", $options) ?
             $options['freeze'] : array();
 
@@ -498,16 +503,17 @@ $('li a').click(function (event) {
 
         $text = "";
 
-
         // Pour le script des formules
         $script = "";
         $libraries = [];
         $stylesheets = [];
 
-        // Default assets for webapp
-        $libraries['jquery'] = '<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>' . "\n"; // No need, included in template file
-        $libraries['jqueryui'] = '<script src="http://code.jquery.com/ui/1.10.4/jquery-ui.min.js"></script>' . "\n";
-        $libraries['numeral'] = '<script src="http://cdnjs.cloudflare.com/ajax/libs/numeral.js/1.5.3/numeral.min.js""></script>' . "\n";
+        // Default assets for webapplication
+        $libraries = [
+            'jquery'   => '<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>' . "\n",
+            'jqueryui' => '<script src="http://code.jquery.com/ui/1.10.4/jquery-ui.min.js"></script>' . "\n",
+            'numeral'  => '<script src="http://cdnjs.cloudflare.com/ajax/libs/numeral.js/1.5.3/numeral.min.js"></script>' . "\n"
+        ];
 
 
         if ($option_jquery_tab) {
@@ -521,7 +527,7 @@ $('li a').click(function (event) {
 
         // Cr�ation d'un tableau par sheet
         $countsheet = 0;
-        $maxSheet = FALSE;
+        $maxSheet = false;
 
         $htmlTable = '';
 
@@ -658,7 +664,7 @@ $('li a').click(function (event) {
                         $used_styles[] = $temp_curcol_style;
 
                         // Hidde cell if col is collapsed
-                        if ($temp_curcol->get_collapsed() == TRUE) $class .= " hidden-cell";
+                        if ($temp_curcol->get_collapsed() == true) $class .= " hidden-cell";
                     }
                     // Gestion du Colspan
                     $colspan = $tempcell->cell_get_colspan();
@@ -867,8 +873,8 @@ $('li a').click(function (event) {
         foreach ($steps as $currentstep) {
             $flat_stepdep = array();
             array_walk_recursive($currentstep['dep'], function ($a) use (&$flat_stepdep) {
-                    $flat_stepdep[] = $a;
-                });
+                $flat_stepdep[] = $a;
+            });
         }
 
         // Impression des steps de calcul, uniquement s'il y a des �tapes de calcul
@@ -876,13 +882,13 @@ $('li a').click(function (event) {
         if ($currentstep > 0) {
             $run_calc = 'function run_calc(){ ';
             $formulascall = '';
-            $isFirstInput = TRUE;
+            $isFirstInput = true;
 
             foreach ($steps as $currentstep_index => $currentstep) {
                 $stepdep = '';
 
                 if (!$isFirstInput) : $run_calc .= ";";
-                else : $isFirstInput = FALSE; endif;
+                else : $isFirstInput = false; endif;
 
                 $run_calc .= 'step' . $currentstep_index . '()';
 
@@ -913,7 +919,7 @@ $('li a').click(function (event) {
                 $formulas_ext .= $this->get_extfct($ext_formula, dirname(__FILE__) . "/lib/formula.js");
             }
 
-            $access_formulas = array("RANGE", "get_input", "setOutput", "$.fn.exists");
+            $access_formulas = array("RANGE", "getInput", "setOutput", "$.fn.exists");
             foreach ($access_formulas as $formula) {
                 $formulas_ext .= $this->get_extfct($formula, dirname(__FILE__) . "/lib/appizy.js");
             }
@@ -925,7 +931,7 @@ inputs = document.getElementsByTagName('input');
 for(i=0; i<inputs.length; i++){
 	input = inputs.item(i);
 
-	value = get_input(inputs.item(i).value,  inputs.item(i).dataset.type);
+	value = getInput(inputs.item(i).value,  inputs.item(i).dataset.type);
 	if (!input.disabled) setOutput(inputs.item(i).name, value, inputs.item(i).dataset.type);
 }
 run_calc();
@@ -979,7 +985,7 @@ run_calc();
      * Note: a tool might have more styles that come from the parsed XML, but are
      * not used into by the element of it.
      */
-    function tool_get_css($used_styles = array(), $compact_code = TRUE)
+    function tool_get_css($used_styles = array(), $compact_code = true)
     {
 
         $css_code = file_get_contents(dirname(__FILE__) . "/template/style-webapp-default.css");
@@ -1011,7 +1017,7 @@ run_calc();
         if (!in_array($function_name, $already_loaded)) {
 
             if (preg_match_all($expression, file_get_contents($library_path), $match)) {
-                $function = compact_code($match[1][0]);
+                $function = $match[1][0];
                 $ext_formula = $namu . " = function" . $function . "}" . "\n";
             }
 
@@ -1031,8 +1037,7 @@ run_calc();
                 }
             }
         }
+
         return $ext_formula;
     }
 }
-
-?>

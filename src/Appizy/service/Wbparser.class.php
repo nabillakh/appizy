@@ -2,10 +2,8 @@
 
 // Dependancies
 
-
 // Childs parser
 include('Odoc_wbparser.class.php');
-//include('oxml_wbparser.class.php');
 
 class Wbparser {
 
