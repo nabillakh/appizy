@@ -1,0 +1,230 @@
+<?php
+/**
+* Implements hook_token_info().
+*/
+function appizy_stats_token_info() {
+  // new type
+  $info['types']['appizy-analytics'] = array(
+    'name' => t('Appizy analytics variables'),
+    'description' => t("Appizy analytics variables."),
+  );
+  // new token
+  $info['tokens']['appizy-analytics']['status'] = array(
+    'name' => t('User status'),
+    'description' => t("Track whether users are logged in."),
+  );
+  $info['tokens']['appizy-analytics']['conversions'] = array(
+    'name' => t('User conversions'),
+    'description' => t("Track number of conversions per session."),
+  );
+  return $info;
+}
+
+/**
+* Implements hook_tokens().
+*/
+function appizy_stats_tokens($type, $tokens, array $data = array(), array $options = array()) {
+  $replacements = array();
+
+  if ($type == 'appizy-analytics') {
+    foreach ($tokens as $name => $original) {
+      switch ($name) {
+        case 'status':
+          global $user;
+          if (user_is_logged_in()) {
+            $replacements[$original] = "Logged-in";
+          } else {
+            $replacements[$original] = "Logged-out";
+          }
+          break;
+        case 'conversions':
+          if (isset($_SESSION['appizy']['conversions'])){
+            $replacements[$original] = $_SESSION['appizy']['conversions'];
+          } else {
+            $replacements[$original] = 0;
+          }
+          break;
+      }
+    }
+  }
+
+  return $replacements;
+}
+
+/**
+ * Hook user account creation
+ */
+function appizy_stats_user_insert(&$edit, $account, $category) {
+  //drupal_set_message("Trop cool");
+  $data = array(
+      'ec' => 'Account',       // Event Category. Required.
+      'ea' => 'creation',   // Event Action. Required.
+      'el' => NULL,
+      'ev' => NULL,
+  );
+  gaBuildHit( $method = 'event', $data );
+}
+
+/**
+ * Hook Appizy UI
+ */
+function appizy_stats_form_form_appizy_ui_alter(&$form,&$form_state,$form_id)
+{
+  //drupal_set_message("Hello Appizy UI");
+}
+
+// Handle the parsing of the _ga cookie or setting it to a unique identifier
+function gaParseCookie() {
+  if (isset($_COOKIE['_ga'])) {
+    list($version,$domainDepth, $cid1, $cid2) = preg_split('[\.]', $_COOKIE["_ga"],4);
+    $contents = array('version' => $version, 'domainDepth' => $domainDepth, 'cid' => $cid1.'.'.$cid2);
+    $cid = $contents['cid'];
+  }
+  else $cid = gaGenUUID();
+  return $cid;
+}
+
+// Generate UUID v4 function - needed to generate a CID when one isn't available
+function gaGenUUID() {
+  return sprintf( '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
+    // 32 bits for "time_low"
+    mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ),
+
+    // 16 bits for "time_mid"
+    mt_rand( 0, 0xffff ),
+
+    // 16 bits for "time_hi_and_version",
+    // four most significant bits holds version number 4
+    mt_rand( 0, 0x0fff ) | 0x4000,
+
+    // 16 bits, 8 bits for "clk_seq_hi_res",
+    // 8 bits for "clk_seq_low",
+    // two most significant bits holds zero and one for variant DCE1.1
+    mt_rand( 0, 0x3fff ) | 0x8000,
+
+    // 48 bits for "node"
+    mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff )
+  );
+}
+
+function gaBuildHit( $method = null, $info = null ) {
+
+  // Standard params
+  $v = 1;
+  $tid = "UA-45708260-1"; // Put your own Analytics ID in here
+  $cid = gaParseCookie();
+
+  // Register a PAGEVIEW
+  if ($method === 'pageview') {
+
+    // Send PageView hit
+    $data = array(
+      'v' => $v,
+      'tid' => $tid,
+      'cid' => $cid,
+      't' => 'pageview',
+      'dt' => $info['title'],
+      'dp' => $info['slug']
+    );
+
+    gaFireHit($data);
+
+  } // end pageview method
+
+  elseif ($method == 'event') {
+
+    $data = array(
+      'v' => $v,       // Version.
+      'tid' => $tid,  // Tracking ID / Web property / Property ID.
+      'cid' => $cid,  // Anonymous Client ID.
+
+      't' => 'event',         // Event hit type
+      'ec' => $info['ec'],       // Event Category. Required.
+      'ea' => $info['ea'],   // Event Action. Required.
+      /*
+      'el' => holiday     // Event label.
+      'ev' => 300         // Event value.
+      */
+    );
+
+    gaFireHit($data);
+    
+  }
+
+  // Register an ECOMMERCE TRANSACTION (and an associated ITEM)
+  else if ($method === 'ecommerce') {
+
+    // Set up Transaction params
+    $ti = uniqid(); // Transaction ID
+    $ta = 'SI';
+    $tr = $info['price']; // transaction value (native currency)
+    $cu = $info['cc']; // currency code
+
+    // Send Transaction hit
+    $data = array(
+      'v' => $v,
+      'tid' => $tid,
+      'cid' => $cid,
+      't' => 'transaction',
+      'ti' => $ti,
+      'ta' => $ta,
+      'tr' => $tr,
+      'cu' => $cu
+    );
+    gaFireHit($data);
+
+    // Set up Item params
+    $in = urlencode($info['info']->product_name); // item name;
+    $ip = $tr;
+    $iq = 1;
+    $ic = urlencode($info['info']->product_id); // item SKU
+    $iv = urlencode('SI'); // Product Category - we use 'SI' in all cases, you may not want to
+
+    // Send Item hit
+    $data = array(
+      'v' => $v,
+      'tid' => $tid,
+      'cid' => $cid,
+      't' => 'item',
+      'ti' => $ti,
+      'in' => $in,
+      'ip' => $ip,
+      'iq' => $iq,
+      'ic' => $ic,
+      'iv' => $iv,
+      'cu' => $cu
+    );
+    gaFireHit($data);
+
+  } // end ecommerce method
+}
+
+// See https://developers.google.com/analytics/devguides/collection/protocol/v1/devguide
+function gaFireHit( $data = null ) {
+  if ( $data ) {
+    $getString = 'http://www.google-analytics.com/collect';
+    $getString .= '?payload_data&';
+    $getString .= http_build_query($data);
+    //drupal_set_message($getString);
+
+    $url = 'http://www.google-analytics.com/collect';
+
+    // use key 'http' even if you send the request to https://...
+    $options = array(
+        'http' => array(
+            'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+            'user_agent'=> $_SERVER['HTTP_USER_AGENT'],
+            'method'  => 'POST',
+            'content' => http_build_query($data),
+        ),
+    );
+    $context  = stream_context_create($options);
+    $result = file_get_contents($url, false, $context);
+
+    //var_dump($result);
+    #$sendlog = error_log($getString, 1, "ME@EMAIL.COM"); // comment this in and change your email to get an log sent to your email
+
+    //return $result;
+  }
+  //return false;
+}
