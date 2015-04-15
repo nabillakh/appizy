@@ -47,8 +47,6 @@ class Tool
 
         // Set formulas dep as "in"
         $this->formula_dep_setin();
-
-        // dpm($this->styles);
         /**
          * Styles cleaning
          */
@@ -64,10 +62,7 @@ class Tool
 
                 $this->styles[$id] = $style;
             }
-
         }
-        // dpm($this->styles);
-        // dpm($this->used_styles);
     }
 
     /**
@@ -79,13 +74,10 @@ class Tool
         $index = 0;
         foreach ($this->formulas as $formula) {
 
-            // $this->tool_debug("Set dep:".$index);
 
             if ($formula->formula_isprintable()) {
 
                 $dependances = $formula->get_dependances();
-
-                // $this->tool_debug("Got dep:".count($dependances));
 
                 foreach ($dependances as $dep) {
 
@@ -912,7 +904,7 @@ $('li a').click(function (event) {
             $formulas_ext .= "(function() {" . "\n";
             $formulas_ext .= "var root = this;" . "\n";
             $formulas_ext .= "var Formula = root.Formula = {};" . "\n";
-            
+
             foreach ($ext_formulas as $ext_formula) {
                 $formulas_ext .= $this->getExtFunction($ext_formula, __DIR__ . "/lib/formula.js");
             }
