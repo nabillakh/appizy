@@ -906,22 +906,20 @@ $('li a').click(function (event) {
         }
         $run_calc .= "};" . "\n";
 
-        // Formules ext�rieures
+        // Get external formulas
         if (!empty($formulascall)) {
             $formulas_ext = "// Calculation functions" . "\n";
             $formulas_ext .= "(function() {" . "\n";
             $formulas_ext .= "var root = this;" . "\n";
             $formulas_ext .= "var Formula = root.Formula = {};" . "\n";
-
-            // $ext_formulas[] = "RANGE";
-            // $ext_formulas[] = "app_display";
+            
             foreach ($ext_formulas as $ext_formula) {
-                $formulas_ext .= $this->get_extfct($ext_formula, dirname(__FILE__) . "/lib/formula.js");
+                $formulas_ext .= $this->getExtFunction($ext_formula, __DIR__ . "/lib/formula.js");
             }
 
-            $access_formulas = array("RANGE", "getInput", "setOutput", "$.fn.exists");
-            foreach ($access_formulas as $formula) {
-                $formulas_ext .= $this->get_extfct($formula, dirname(__FILE__) . "/lib/appizy.js");
+            $accessFormulas = array("RANGE", "getInput", "setOutput", "$.fn.exists");
+            foreach ($accessFormulas as $formula) {
+                $formulas_ext .= $this->getExtFunction($formula, __DIR__ . "/lib/appizy.js");
             }
             $formulas_ext .= "}).call(this);" . "\n";
 
@@ -1004,7 +1002,7 @@ run_calc();
     /**
      * Gets functions out of external library
      */
-    function get_extfct($function_name, $library_path, $already_loaded = array())
+    function getExtFunction($function_name, $library_path, $already_loaded = array())
     {
 
         $namu = $function_name;
@@ -1033,7 +1031,7 @@ run_calc();
                     $dep_name = "Formula." . $dep_name;
 
                     if (!in_array($dep_name, $already_loaded))
-                        $ext_formula .= $this->get_extfct($dep_name, $library_path, $already_loaded);
+                        $ext_formula .= $this->getExtFunction($dep_name, $library_path, $already_loaded);
                 }
             }
         }
