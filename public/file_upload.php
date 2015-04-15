@@ -8,7 +8,7 @@ $uploadDir = dirname(__FILE__) . '/tmp/' . $appId;
 mkdir($uploadDir, 0777);
 
 $uploader = new FileUpload('uploadfile');
-$uploader->allowedExtensions = ['ods', 'xlsx', 'xls'];
+$uploader->allowedExtensions = ['ods'];
 
 
 // Handle the upload

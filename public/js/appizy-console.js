@@ -29,13 +29,13 @@
                 this.setProgressBar(progressBar);
             },
             onSubmit: function () {
-                $('#status').addClass('working label-warning label-important').text('Running...');
+                $('#status').addClass('text-warning').text('Running...');
                 $(window).trigger('appizy','Conversion');
                 msgBox.innerHTML = ''; // empty the message box
                 btn.innerHTML = 'Uploading...'; // change button text to "Uploading..."
             },
             onComplete: function (filename, response) {
-                btn.innerHTML = 'Choose Another File';
+                btn.innerHTML = 'Choose File';
                 progressOuter.style.display = 'none'; // hide progress bar when upload is completed
 
                 if (!response) {
@@ -72,19 +72,19 @@
 
                         if (xhr.readyState == XMLHttpRequest.DONE) {
                             window.clearTimeout(timer);
-                            $('#status').removeClass('working label-warning label-important');
+                            $('#status').removeClass('text-warning');
                             if ($result.text().match(/Error:/)) {
-                                $('#status').addClass('label-important').text('Completed with errors!');
+                                $('#status').addClass('text-important').text('Completed with errors!');
                             }
                             else {
-                                $('#status').addClass('label-success').text('Completed.');
+                                $('#status').addClass('text-success').text('Completed.');
                             }
                             // updateServerStatus();
                         }
                     }, 200);
 
                 } else {
-                    $('#status').addClass('label-danger').text('Completed with errors!');
+                    $('#status').addClass('text-danger').text('Completed with errors!');
                     if (response.msg) {
                         msgBox.innerHTML = escapeTags(response.msg);
 
@@ -94,7 +94,7 @@
                 }
             },
             onError: function () {
-                $('#status').addClass('label-important').text('Completed with errors!');
+                $('#status').addClass('text-danger').text('Completed with errors!');
                 progressOuter.style.display = 'none';
                 msgBox.innerHTML = 'Unable to upload file';
             }
