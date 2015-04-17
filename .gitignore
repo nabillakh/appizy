@@ -11,3 +11,6 @@ package.json
 
 # JS
 htdocs/js/appizy-analytics.js
+
+# Bash scripts
+bin
