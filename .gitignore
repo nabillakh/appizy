@@ -2,7 +2,7 @@
 .idea
 
 # Upload dir
-public/tmp
+htdocs/tmp/**/*.zip
 
 # npm
 node_modules
@@ -10,4 +10,4 @@ Gruntfile.js
 package.json
 
 # JS
-public/js/appizy-analytics.js
+htdocs/js/appizy-analytics.js

@@ -14,12 +14,12 @@ $appDir = $_POST['app_id'] ? 'tmp/' . $_POST['app_id'] . '/' : 'tmp';
 $sourceFile = $_POST['filename'];
 
 $command = "cd ../.. & ";
-$command .= "php -f src/Appizy/appizy.php 'public/" . $appDir . $sourceFile . "'";
+$command .= "php -f src/Appizy/appizy.php 'htdocs/" . $appDir . $sourceFile . "'";
 
 passthru($command, $status);
 
 // Delete source file
-unlink("public/$appDir$sourceFile");
+unlink("htdocs/$appDir$sourceFile");
 print ("Source file deleted from server<br />");
 
 if ($status !== 0) {
