@@ -3,7 +3,7 @@
 
 Create awesome web-content starting from a simple spreadsheet. 
 
-Appizy transforms spreadsheets into standalone web-calculators. Discover how it works with a [sample spreadsheet](http://appizy.com/demo-files) 
+Appizy transforms spreadsheets into standalone web-calculators. Discover how it works with a [sample spreadsheet](http://appizy.com/demo-files/demo_appizy.ods). 
 
 ## Roadmap
 
