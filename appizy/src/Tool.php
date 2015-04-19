@@ -2,11 +2,10 @@
 /**
  * Class dependancies
  */
-include('SheetColRowCell.class.php');
-include('Formula.class.php');
-include('Wbparser.class.php');
-include('Style.class.php');
-// include('appizy_theme.inc');
+include('SheetColRowCell.php');
+include('Formula.php');
+include('OpenDocumentParser.php');
+include('Style.php');
 include('lib/array-handle.php');
 
 class Tool
@@ -35,7 +34,7 @@ class Tool
     function tool_parse_wb($xml_path)
     {
 
-        $extracted_ods = new Odoc_wbparser($xml_path, $this->debug);
+        $extracted_ods = new OpenDocumentParser($xml_path, $this->debug);
 
         $this->sheets = $extracted_ods->wb_sheets;
         $this->formulas = $extracted_ods->wb_formulas;
@@ -513,7 +512,7 @@ $('li a').click(function (event) {
             $script .= 'jQuery( "#sheets" ).tabs();' . "\n";
             $script .= 'jQuery( "#sheets" ).tooltip();' . "\n";
         }
-        $libraries[] = '<script src="http://cdnjs.cloudflare.com/ajax/libs/numeral.js/1.5.3/numeral.min.js"></script>';
+
         $formulas = "// Cells formulas" . "\n";
         $formulaslist = array();
 

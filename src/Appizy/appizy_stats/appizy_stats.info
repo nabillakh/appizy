@@ -1,5 +1,0 @@
-name = Appizy Stats
-description = Appizy stats module.
-core = 7.x
-files[] = appizy_stats.module
-package = Appizy
