@@ -10,13 +10,20 @@ if (!is_file($filePath)) {
     throw new Exception();
 }
 
-$fileDir = dirname($filePath);
-$extractDir = $fileDir . '/deflated';
+try {
+    echo "Decompressing file \n";
 
-$zip = new ZipArchive;
-$zip->open($filePath);
-$zip->extractTo($extractDir);
-$zip->close();
+    $fileDir = dirname($filePath);
+    $extractDir = $fileDir . '/deflated';
+
+    $zip = new ZipArchive;
+    $zip->open($filePath);
+    $zip->extractTo($extractDir);
+    $zip->close();
+
+} catch (Exception $e) {
+    echo 'Error while file decompression: ' . $e->getMessage() . "\n";
+}
 
 $xml_path[] = $extractDir . "/styles.xml";
 $xml_path[] = $extractDir . "/content.xml";
@@ -29,7 +36,7 @@ try {
     echo "Parsing spreadsheet \n";
     $tool->tool_parse_wb($xml_path);
 } catch (Exception $e) {
-    echo 'Error while parsing spreadsheet: ' . $e->getMessage();
+    echo 'Error while parsing spreadsheet: ' . $e->getMessage() . "\n";
 }
 
 try {
@@ -43,7 +50,7 @@ try {
         'print header' => true,
     ));
 } catch (Exception $e) {
-    echo 'Error while rendering the webapplication: ' . $e->getMessage();
+    echo 'Error while rendering the webapplication: ' . $e->getMessage() . "\n";
 }
 
 $htmlTable = $elements['content'];
