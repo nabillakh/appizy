@@ -40,7 +40,7 @@ try {
 }
 
 try {
-    echo 'Rendering application';
+    echo "Rendering application \n";
     $tool->tool_clean();
 
     $elements = $tool->tool_render(null, 1, array(
