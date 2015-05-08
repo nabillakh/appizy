@@ -4,39 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "6d72f56f11ebfa60fc49a8c81f8516fe",
+    "hash": "04f50a223a6546095db0c5dfe4388a8d",
     "packages": [
-        {
-            "name": "nicolashefti/appizy",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "/Users/nicolashefti/Sites/appizy/appizy",
-                "reference": "d719cee89793f2446381016b448512042c95343b"
-            },
-            "require": {
-                "php": ">=5.3.3"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Appizy\\": [
-                        "src/"
-                    ]
-                }
-            },
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Nicolas Hefti"
-                }
-            ],
-            "description": "Web-content generator starting from spreadsheet data",
-            "homepage": "http://appizy.com/",
-            "time": "2015-05-06 21:03:45"
-        },
         {
             "name": "slim/slim",
             "version": "2.6.2",
@@ -87,9 +56,7 @@
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "nicolashefti/appizy": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": [],
