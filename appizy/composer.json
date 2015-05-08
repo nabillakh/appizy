@@ -1,0 +1,22 @@
+{
+    "name"       : "nicolashefti/appizy",
+    "description": "Web-content generator starting from spreadsheet data",
+    "homepage"   : "http://appizy.com/",
+    "type"       : "library",
+    "license"    : "MIT",
+    "authors"    : [
+        {
+            "name": "Nicolas Hefti"
+        }
+    ],
+
+    "require": {
+        "php"         : ">=5.3.3"
+    },
+
+    "autoload": {
+        "psr-4": {
+            "Appizy\\": ["src/"]
+        }
+    }
+}
