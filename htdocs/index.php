@@ -128,9 +128,7 @@
     </div>
     <hr>
     <p>Project by <a href="https://fr.linkedin.com/pub/nicolas-hefti/24/67b/121" target="_blank">Nicolas Hefti</a>,
-        coded with fun & happiness in Cologne</p>
-    <p class="small text-muted">
-        Current version id: <?php echo shell_exec("git log -1 --pretty=format:'%h - %ci' "); ?>
+        coded with fun & happiness in Cologne
     </p>
 </div>
 <script type="text/javascript" src="js/appizy-console.js"></script>
