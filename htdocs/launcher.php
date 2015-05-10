@@ -8,24 +8,24 @@ header("Content-type: application/octet-stream");
 // Need to output 2K text: http://stackoverflow.com/questions/7740646/jquery-ajax-read-the-stream-incrementally
 // echo str_repeat('°°filler°°', 205) . PHP_EOL;
 
-print ("<br>### <b>Starting Appizy</b><br/> \n");
+print ("<br>### <b>Starting Appizy</b>\n");
 
 $appDir = $_POST['app_id'] ? 'tmp/' . $_POST['app_id'] . '/' : 'tmp';
 $sourceFile = $_POST['filename'];
 
 $command = "cd ../.. & ";
-$command .= "php -f appizy/src/Appizy.php 'htdocs/" . $appDir . $sourceFile . "'";
+$command .= "php -f appizy/Appizy/src/Appizy.php 'htdocs/" . $appDir . $sourceFile . "'";
 
 passthru($command, $status);
 
 // Delete source file
 unlink("htdocs/$appDir$sourceFile");
-print ("Source file deleted from server<br />");
+print ("Source file deleted from server\n");
 
 if ($status !== 0) {
 
     print (
-    '<b class="text-danger">### Error while running Appizy</b> .'
+    '<b class="text-danger">### Error while running Appizy</b>. \n'
     );
 
 } else {
@@ -55,7 +55,7 @@ if ($status !== 0) {
         unlink(__DIR__ . '/'.$appDir . '/'.$file);
     }
 
-    print ("<b>### Appizy done!</b><br /><br />");
+    print ("<b>### Appizy done!</b>\n");
 
     print ('<span class="glyphicon glyphicon-save"></span>&nbsp;<a href="' . $appDir. "myappi.zip" . '">Download your converted files</a>');
 }

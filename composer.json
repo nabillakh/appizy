@@ -1,5 +1,12 @@
 {
-    "require"     : {
-        "slim/slim": "~2.0"
+    "autoload": {
+        "psr-4": {
+            "Appizy\\": "appizy/Appizy/src/"
+        }
+    },
+
+    "require": {
+        "slim/slim"      : "~2.0",
+        "symfony/console": "2.3.*"
     }
 }

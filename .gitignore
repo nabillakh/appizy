@@ -15,4 +15,8 @@ htdocs/js/appizy-analytics.js
 # Bash scripts
 bin
 
+# Composer
 vendor
+
+# Heroku
+.env

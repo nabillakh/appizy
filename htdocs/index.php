@@ -129,9 +129,29 @@
     <hr>
     <p>Project by <a href="https://fr.linkedin.com/pub/nicolas-hefti/24/67b/121" target="_blank">Nicolas Hefti</a>,
         coded with fun & happiness in Cologne</p>
+    <p class="small text-muted">
+        Current version id: <?php echo shell_exec("git log -1 --pretty=format:'%h - %ci' "); ?>
+    </p>
 </div>
 <script type="text/javascript" src="js/appizy-console.js"></script>
 <script type="text/javascript" src="js/SimpleAjaxUploader.min.js"></script>
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+<?php if (getenv('GA_ID')): ?>
+    <script type="application/javascript">
+        (function(window, $){
+            $(window).on('appizy', function(event, event_name){
+                window.ga('send','event','appizy', 'conversion', 'start');
+            });
+        })(window, jQuery);
+
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+        ga('create', '<?php echo getenv('GA_ID') ?>', 'auto');
+        ga('send', 'pageview');
+    </script>
+<?php endif ?>
 </body>
 </html>
