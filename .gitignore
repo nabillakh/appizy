@@ -9,11 +9,6 @@ node_modules
 Gruntfile.js
 package.json
 
-# JS
-htdocs/js/appizy-analytics.js
-
-# Bash scripts
-bin
 
 # Composer
 vendor

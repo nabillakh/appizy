@@ -48,7 +48,7 @@
                         <div id="output" class="well" style="overflow-y: scroll;height:240px;">
                             <div class="text-muted">
                                 <ul>
-                                    <li>Choose a OpenDocument (.ods) spreadsheet on your computer or download a <a
+                                    <li>Choose an OpenDocument (.ods) spreadsheet on your computer or download a <a
                                             href="demo-files/demo_appizy.ods">demo file</a> just made for you!
                                     </li>
                                     <li>If you are using Excel, first convert your file to OpenDocument using <a
