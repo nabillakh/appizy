@@ -96,7 +96,7 @@ function fatalHandler()
         if (preg_match('/Allowed memory size of (\\d+) bytes exhausted/', $message)) {
             echo "X File too big. Have look at the FAQ for more information. \n";
         } else {
-            echo "X Unknown fatal error. Please report to hello@appizy.com \n";
+            echo "X Unknown fatal error. Please report to hello@appizy.com: $message";
         }
     }
 }

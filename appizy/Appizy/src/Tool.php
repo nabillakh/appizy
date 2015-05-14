@@ -1,12 +1,6 @@
 <?php
-/**
- * Class dependancies
- */
-include('SheetColRowCell.php');
-include('Formula.php');
-include('OpenDocumentParser.php');
-include('Style.php');
-include('lib/array-handle.php');
+
+namespace Appizy;
 
 class Tool
 {

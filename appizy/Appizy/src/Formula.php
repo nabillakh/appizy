@@ -1,10 +1,14 @@
 <?php
 
-class formula {
-  var $cell_coord ; // coordonnŽes de la cellule d'origine
+namespace Appizy;
+
+class Formula
+{
+
+  var $cell_coord ; // coordonnï¿½es de la cellule d'origine
   var $formula_elements ;
-  var $dependances ; // Tableau des coordonnŽes de cellules dont dŽpent la formule
-  var $ext_formula_dependances ; // Liste des fonctions externes dont dŽpend la formule
+  var $dependances ; // Tableau des coordonnï¿½es de cellules dont dï¿½pent la formule
+  var $ext_formula_dependances ; // Liste des fonctions externes dont dï¿½pend la formule
   var $error; // Default value: FALSE; contains an array of error message otherwise.
 
   function formula($coord = array(), $ods_formula = '', $current_sheet = 0, $sheets_name = array()) {
@@ -142,8 +146,8 @@ class formula {
     $offset = 0;
 
     foreach($array_formula as $key => $formula_element) {
-      // Pour chaque ŽlŽment de la formule
-      $temp = str_split($formula_element); // A remplacer par expression rŽgulire
+      // Pour chaque ï¿½lï¿½ment de la formule
+      $temp = str_split($formula_element); // A remplacer par expression rï¿½guliï¿½re
 
       if ($temp[0]=="[") {
         // If element starts with an "[" it's a range reference
@@ -205,7 +209,7 @@ class formula {
 
     } // End foreach formula element
 
-    // $celldependancies = array_unique($celldependancies); // Chaque dŽpendance est unique
+    // $celldependancies = array_unique($celldependancies); // Chaque dï¿½pendance est unique
 
     $this->dependances = $celldependancies;
     $this->formula_elements = $array_formula;
@@ -222,7 +226,7 @@ class validation {
  * Ensemble de fonctions pour traiter une formule de calcul OpenDocument
 */
 
-// DŽcompose une $formula brute (String) en ŽlŽments unitaires d'un $lexicon (Array) passŽ en paramtre
+// Dï¿½compose une $formula brute (String) en ï¿½lï¿½ments unitaires d'un $lexicon (Array) passï¿½ en paramï¿½tre
 function lexer($formula, $lexicon) {
     $index = 0;
     $lexedformula = array();
@@ -232,14 +236,14 @@ function lexer($formula, $lexicon) {
 
     if($size>0)
     {
-        // Si le lexique contient un ŽlŽment on dŽcompose suivante cet ŽlŽment
+        // Si le lexique contient un ï¿½lï¿½ment on dï¿½compose suivante cet ï¿½lï¿½ment
         
-        // La formule passŽe en paramtre est dŽcomposŽe suivant le terme du lexique ODS($lexico)
+        // La formule passï¿½e en paramï¿½tre est dï¿½composï¿½e suivant le terme du lexique ODS($lexico)
         list($odslexicon,$javalexicon) = each($lexicon) ;
 
         $formulapiece = explode($odslexicon,$formula);
         
-        // l'array retournŽ dans ce cas est composŽ des morceaux de formules que l'on continue de dŽcomposŽe
+        // l'array retournï¿½ dans ce cas est composï¿½ des morceaux de formules que l'on continue de dï¿½composï¿½e
         // avec les termes du lexique entre
         $isFirst = TRUE ;
         foreach($formulapiece as $piece)
@@ -253,7 +257,7 @@ function lexer($formula, $lexicon) {
             }
             $newlexicon = array_slice($lexicon, 1);
             
-            // avant de lancer la rŽcurcivitŽ on vŽrifie que le morceau de formule n'est pas vide
+            // avant de lancer la rï¿½curcivitï¿½ on vï¿½rifie que le morceau de formule n'est pas vide
             if($piece!="") : $lexedformula[$index] = lexer($piece,$newlexicon); endif ;
             $index=$index+2 ;
         }
@@ -264,14 +268,14 @@ function lexer($formula, $lexicon) {
         return $flat_formula;
     }else
     {
-        // sinon on renvoie la formule passŽ en paramtre
+        // sinon on renvoie la formule passï¿½ en paramï¿½tre
         return $formula ;
     }
 }
 
 
 /**
- * Transforme des coordonŽes de cellule ODS en coordonnŽes cartŽsiennes
+ * Transforme des coordonï¿½es de cellule ODS en coordonnï¿½es cartï¿½siennes
  */
 function string2coord($string,$currentsheet,$sheetname) {
 
@@ -312,11 +316,11 @@ function string2coord($string,$currentsheet,$sheetname) {
   }
 }
 
-// Pour sortir les ŽlŽments d'un tableau par taille
+// Pour sortir les ï¿½lï¿½ments d'un tableau par taille
 function sortBylength($a,$b) {
     return strlen($b)-strlen($a);
 }
-// Transforme une cha”ne alpha en num, base 26
+// Transforme une chaï¿½ne alpha en num, base 26
 function alpha2num($a) {
     $l = strlen($a);
     $n = 0;
@@ -324,6 +328,3 @@ function alpha2num($a) {
         $n = $n*26 + ord($a[$i]) - 0x40;
     return $n-1;
 }
-
-
-?>
