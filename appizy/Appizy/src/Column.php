@@ -8,16 +8,15 @@ class Column extends TableElement
     var $collapse;
     var $default_cell_style;
 
-    function column($colid)
+    function __construct($colid)
     {
-        $this->colid = $colid;
         $this->default_cell_style = "";
         $this->collapse = false;
     }
 
     function get_colid()
     {
-        return $this->colid;
+        return $this->get_id();
     }
 
     function col_set_default_cell_style($newStyle)

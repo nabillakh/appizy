@@ -21,6 +21,7 @@ class OpenDocumentParser
     var $fonts;
     var $styles;
     var $sheets;
+    var $formulas;
     var $formats;
 
     var $lastElement;
@@ -43,6 +44,10 @@ class OpenDocumentParser
     var $used_styles;
     var $debug;
 
+    /**
+     * @param $filenames
+     * @param $debug
+     */
     function __construct($filenames, $debug)
     {
 
@@ -51,6 +56,7 @@ class OpenDocumentParser
         $this->sheets = array();
         $this->validations = array();
         $this->formats = array();
+        $this->formulas = array();
 
         $this->used_styles = array();
 
@@ -76,11 +82,14 @@ class OpenDocumentParser
 
     /**
      * Adds a new sheet to the Parser
+     *
+     * @param $sheet_id Integer
+     * @param $sheet_name String
      */
     function addSheet($sheet_id, $sheet_name)
     {
         $new_sheet = new Sheet($sheet_id, $sheet_name);
-        $this->wb_sheets[$sheet_id] = $new_sheet;
+        $this->sheets[$sheet_id] = $new_sheet;
     }
 
     /**
@@ -88,31 +97,32 @@ class OpenDocumentParser
      */
     function addRow($sheet_ind, $row_ind, $options)
     {
-        // Create a new row
         $new_row = new Row($sheet_ind, $row_ind, $options);
-        // Get selected sheet
-        $sheet = $this->wb_sheets[$sheet_ind];
+
+        /** @var Sheet $sheet */
+        $sheet = $this->sheets[$sheet_ind];
         $sheet->addRow($new_row);
     }
 
-    function add_cell($sheet_ind, $row_ind, $col_ind, $options)
-    {
-        // Create a new cell
+    function addCell($sheet_ind, $row_ind, $col_ind, $options) {
         $new_cell = new Cell($sheet_ind, $row_ind, $col_ind, $options);
         // Get selected row in the selected sheet
-        $sheet = $this->wb_sheets[$sheet_ind];
+        /** @var Sheet $sheet */
+        $sheet = $this->sheets[$sheet_ind];
+        /** @var Row $row */
         $row = $sheet->getRow($row_ind);
+
         $row->addCell($new_cell);
     }
 
-    function add_formula($new_formula)
+    function addFormula($new_formula)
     {
-        $this->wb_formulas[] = $new_formula;
+        $this->formulas[] = $new_formula;
     }
 
-    function add_col($sheet_ind, column $new_col)
+    function addCol($sheet_ind, column $new_col)
     {
-        $sheet = $this->wb_sheets[$sheet_ind];
+        $sheet = $this->sheets[$sheet_ind];
         $sheet->addCol($new_col);
     }
 
@@ -169,7 +179,7 @@ class OpenDocumentParser
                         $tempcol->col_set_default_cell_style($col['attrs']['TABLE:DEFAULT-CELL-STYLE-NAME']);
                     }
                 }
-                $this->add_col($cS, $tempcol);
+                $this->addCol($cS, $tempcol);
             }
 
             foreach ($sheet['rows'] as $cR => $row) {
@@ -207,6 +217,7 @@ class OpenDocumentParser
                                     $cell_options['style'] = strtolower($default_style);
                                 }
 
+
                             }
                             if (array_key_exists('OFFICE:VALUE', $cell['attrs']))
                                 $cell_options['value_attr'] = htmlentities($cell['attrs']['OFFICE:VALUE'], ENT_QUOTES, "UTF-8");
@@ -224,7 +235,7 @@ class OpenDocumentParser
 
                                 if ($cell_formula->formula_isprintable()) {
                                     // If formula is printable
-                                    $this->add_formula($cell_formula);
+                                    $this->addFormula($cell_formula);
 
                                 }
                                 // Even if not printable, cell still considered as "output"
@@ -244,13 +255,12 @@ class OpenDocumentParser
                             $cell_options['annotation'] = $cell['annotation'];
                         }
 
-                        $this->add_cell($cS, $cR, $cC, $cell_options);
+                        $this->addCell($cS, $cR, $cC, $cell_options);
                     }
                 }
             }
         }
     }
-
 
     function parse($data)
     {
@@ -601,7 +611,6 @@ class OpenDocumentParser
         }
     }
 
-
     function new_contenttag($content_tag)
     {
         // Add the new tag to the stack
@@ -611,13 +620,14 @@ class OpenDocumentParser
         $globaldata = "";
     }
 
-    // Pour les colonnes
     function getColDefaultCellStyle($sheet, $col)
     {
+        /*
         if (array_key_exists($sheet, $this->sheets))
             if (array_key_exists($col, $this->sheets[$sheet]['column']))
                 if (array_key_exists("TABLE:DEFAULT-CELL-STYLE-NAME", $this->sheets[$sheet]['column'][$col]['attrs']))
                     return $this->sheets[$sheet]['column'][$col]['attrs']["TABLE:DEFAULT-CELL-STYLE-NAME"];
+        */
     }
 
     static function html_filter($str_in, $escape_tags = array())

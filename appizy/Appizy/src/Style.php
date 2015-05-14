@@ -13,7 +13,7 @@ class Style
     // Style name
     var $parent_style_name;
 
-    function style($myName)
+    function __construct($myName)
     {
         $this->name = $myName;
         $this->styles = array();

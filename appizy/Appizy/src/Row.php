@@ -10,7 +10,7 @@ class Row extends TableElement
     var $cells;
     var $collapse;
 
-    function Row($sheet_ind, $row_ind, $options)
+    function __construct($sheet_ind, $row_ind, $options)
     {
         $this->set_id($row_ind);
 
@@ -18,14 +18,13 @@ class Row extends TableElement
         $this->row_ind = $row_ind;
         $this->name = 's' . $sheet_ind . 'r' . $row_ind;
 
-
-        $this->cell = array();
+        $this->cell = [];
 
         if (isset($options['collapse'])) $this->collapse = $options['collapse'];
         if (isset($options['style'])) $this->add_style_name($options['style']);
     }
 
-    function addCell(cell $newCell)
+    function addCell(Cell $newCell)
     {
         $cell_id = $newCell->get_id();
         $this->cell[$cell_id] = $newCell;
@@ -78,7 +77,7 @@ class Row extends TableElement
 
     function get_rowind()
     {
-        return $this->row_ind;
+        return $this->get_id();
     }
 
     function get_cell($cell_ind)

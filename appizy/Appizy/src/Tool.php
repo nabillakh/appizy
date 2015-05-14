@@ -2,8 +2,11 @@
 
 namespace Appizy;
 
+use Appizy\ArrayTrait;
+
 class Tool
 {
+    use ArrayTrait;
 
     var $sheets = array();
     var $styles = array();
@@ -30,8 +33,8 @@ class Tool
 
         $extracted_ods = new OpenDocumentParser($xml_path, $this->debug);
 
-        $this->sheets = $extracted_ods->wb_sheets;
-        $this->formulas = $extracted_ods->wb_formulas;
+        $this->sheets = $extracted_ods->sheets;
+        $this->formulas = $extracted_ods->formulas;
         $this->styles = $extracted_ods->styles;
         $this->validations = $extracted_ods->validations;
         $this->formats = $extracted_ods->formats;
@@ -567,7 +570,7 @@ $('li a').click(function (event) {
 
                     if ($tempstyle != '' && $tempstyle != 'Default') {
 
-                        $data_style = array_attribute($this->styles, $tempstyle);
+                        $data_style = self::array_attribute($this->styles, $tempstyle);
 
                         if ($data_style != '') {
 
@@ -581,7 +584,7 @@ $('li a').click(function (event) {
 
                             if ($data_style_name != '') {
 
-                                $main_data_format = array_attribute($this->formats, $data_style_name);
+                                $main_data_format = self::array_attribute($this->formats, $data_style_name);
 
                                 if ($main_data_format != '' && $main_data_format != 'N0') {
 
@@ -591,7 +594,7 @@ $('li a').click(function (event) {
                                     if (!empty($main_data_format->maps)) {
                                         foreach ($main_data_format->maps as $condition => $map) {
                                             if ($condition == 'value()>=0') {
-                                                if ($map_format = array_attribute($this->formats, $map))
+                                                if ($map_format = self::array_attribute($this->formats, $map))
                                                     $data_format .= ';' . $map_format->format_code();
                                             }
                                         }

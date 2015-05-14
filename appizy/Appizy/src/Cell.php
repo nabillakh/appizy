@@ -22,7 +22,7 @@ class Cell extends TableElement
 // Comment on the cell
     var $annotation;
 
-    function cell($sheet, $row, $col, $options = array())
+    function __construct($sheet, $row, $col, $options = array())
     {
         $this->set_id($col);
 //

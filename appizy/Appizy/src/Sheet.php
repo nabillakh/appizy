@@ -2,6 +2,10 @@
 
 namespace Appizy;
 
+use Appizy\Row;
+use Appizy\Column;
+use Appizy\Cell;
+
 class Sheet extends TableElement
 {
     var $name;
@@ -9,7 +13,7 @@ class Sheet extends TableElement
     var $col;
     var $row;
 
-    function sheet($sheet_id, $sheet_name)
+    function __construct($sheet_id, $sheet_name)
     {
         $this->set_id($sheet_id);
         //
@@ -19,13 +23,13 @@ class Sheet extends TableElement
         $this->row = array();
     }
 
-    function addCol(column $newCol)
+    function addCol(Column $newCol)
     {
         $col_ind = $newCol->get_colid();
         $this->col[$col_ind] = $newCol;
     }
 
-    function addRow(row $newRow)
+    function addRow(Row $newRow)
     {
         $row_ind = $newRow->get_rowind();
         $this->row[$row_ind] = $newRow;

@@ -2,6 +2,7 @@
 
 namespace Appizy\Command;
 
+use Appizy\Tool;
 use Exception;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -9,7 +10,6 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use ZipArchive;
-use Appizy\Tool;
 
 class ConvertCommand extends Command
 {
@@ -22,8 +22,7 @@ class ConvertCommand extends Command
                 'path',
                 InputArgument::OPTIONAL,
                 'Which file do you want to convert?'
-            )
-        ;
+            );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -65,7 +64,6 @@ class ConvertCommand extends Command
         $xml_path[] = $extractDir . "/content.xml";
 
 
-
         $tool = new Tool(true);
 
         try {
@@ -88,5 +86,39 @@ class ConvertCommand extends Command
         } catch (Exception $e) {
             echo 'Error while rendering the webapplication: ' . $e->getMessage() . "\n";
         }
+
+
+        $htmlTable = $elements['content'];
+
+        // Import variables in local
+        extract($elements, EXTR_OVERWRITE);
+
+        // Start output buffering
+        ob_start();
+
+        // Include the template file
+        include( __DIR__ .'/../webapp.tpl.php');
+
+        // End buffering and return its contents
+        $htmlTable = ob_get_clean();
+
+        $filename = $fileDir . "/myappizy.html";
+        $open = fopen($filename, "w");
+        fwrite($open, $htmlTable);
+        fclose($open);
+
+        // Removes temporary file
+        self::delTree($extractDir);
+
+    }
+
+    function delTree($dir)
+    {
+        $files = array_diff(scandir($dir), array('.', '..'));
+        foreach ($files as $file) {
+            (is_dir("$dir/$file")) ? self::delTree("$dir/$file") : unlink("$dir/$file");
+        }
+
+        return rmdir($dir);
     }
 }
