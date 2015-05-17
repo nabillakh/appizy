@@ -9,12 +9,10 @@ class Formula
     var $formula_elements;
     var $dependances; // Tableau des coordonn�es de cellules dont d�pent la formule
     var $ext_formula_dependances; // Liste des fonctions externes dont d�pend la formule
-    var $error; // Default value: FALSE; contains an array of error message otherwise.
 
-    function __construct($coord = array(), $ods_formula = '', $current_sheet = 0, $sheets_name = array())
+    function __construct($coord = [], $ods_formula = '', $current_sheet = 0, $sheets_name = [])
     {
         $this->cell_coord = $coord;
-        $this->error = false;
 
         $broken_ref = "#REF!";
         if (stripos($ods_formula, $broken_ref) === false) {
@@ -23,7 +21,7 @@ class Formula
         }
     }
 
-    function formula_crude2elements($ods_formula = '', $current_sheet = 0, $sheets_name = array())
+    function formula_crude2elements($ods_formula = '', $current_sheet = 0, $sheets_name = [])
     {
         // Step 1 - clean crude ODS formula
         $temp_formula = explode("=", $ods_formula, 2); // remove "=" sign at the beginning

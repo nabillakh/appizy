@@ -22,6 +22,11 @@ class ConvertCommand extends Command
                 'path',
                 InputArgument::OPTIONAL,
                 'Which file do you want to convert?'
+            )->addOption(
+                'keep-deflated',
+                'kf',
+                InputOption::VALUE_NONE,
+                'Keep deflated spreadsheet files'
             );
     }
 
@@ -97,7 +102,7 @@ class ConvertCommand extends Command
         ob_start();
 
         // Include the template file
-        include( __DIR__ .'/../webapp.tpl.php');
+        include(__DIR__ . '/../webapp.tpl.php');
 
         // End buffering and return its contents
         $htmlTable = ob_get_clean();
@@ -107,8 +112,11 @@ class ConvertCommand extends Command
         fwrite($open, $htmlTable);
         fclose($open);
 
-        // Removes temporary file
-        self::delTree($extractDir);
+        if (!$input->getOption('keep-deflated')) {
+            // Removes temporary file
+            self::delTree($extractDir);
+            $output->writeln("Temporary files deleted.");
+        }
 
     }
 

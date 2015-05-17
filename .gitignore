@@ -4,6 +4,9 @@
 # Upload dir
 htdocs/tmp/**/*.zip
 
+# Default generated webcontent directory
+webcontent
+
 # npm
 node_modules
 Gruntfile.js
