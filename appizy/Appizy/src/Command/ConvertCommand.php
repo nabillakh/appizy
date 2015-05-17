@@ -32,21 +32,10 @@ class ConvertCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $output->writeln("Starting Appizy");
-
-        $path = $input->getArgument('path');
-        if (file_exists($path)) {
-            $text = "I found your spreadsheet";
-        } else {
-            $text = "Not file found";
-        }
-
-        $output->writeln($text);
-
-        $filePath = $path;
+        $filePath = $input->getArgument('path');
 
         if (!is_file($filePath)) {
-            echo("File not found: $filePath. \n");
+            $output->writeln("File not found: $filePath. \n");
             throw new Exception();
         }
 
@@ -92,7 +81,6 @@ class ConvertCommand extends Command
             echo 'Error while rendering the webapplication: ' . $e->getMessage() . "\n";
         }
 
-
         $htmlTable = $elements['content'];
 
         // Import variables in local
@@ -115,7 +103,7 @@ class ConvertCommand extends Command
         if (!$input->getOption('keep-deflated')) {
             // Removes temporary file
             self::delTree($extractDir);
-            $output->writeln("Temporary files deleted.");
+            $output->writeln("Temporary files deleted");
         }
 
     }
