@@ -1,57 +1,8 @@
 <?php
 
-class data_style
-{
-    var $id;
+namespace Appizy;
 
-    var $decimal_places;
-    var $min_int_digit;
-    var $maps;
-    var $prefix;
-    var $suffix;
-
-    function __construct($id)
-    {
-        $this->id = $id;
-    }
-
-    function data_style_set_prefix($prefix)
-    {
-        // Remove euro sign
-        $prefix = str_replace(chr(0xE2) . chr(0x82) . chr(0xAC), "", $prefix);
-
-        if ($prefix != " " && $prefix != "  " && $prefix != "  " && $prefix != "   ")
-            $this->prefix = $prefix;
-    }
-
-    function data_style_set_suffix($suffix)
-    {
-        // Remove euro sign
-        $suffix = str_replace(chr(0xE2) . chr(0x82) . chr(0xAC), "", $suffix);
-
-        if ($suffix != " " && $suffix != "  " && $suffix != "  " && $suffix != "   ")
-            $this->suffix = $suffix;
-    }
-
-    // Returns the format code of the data style
-    function format_code()
-    {
-        $code = "";
-        for ($i = 0; $i < $this->min_int_digit; $i++) {
-            $code .= '0';
-        }
-        $is_first = true;
-        for ($i = 0; $i < $this->decimal_places; $i++) {
-            $code .= ($is_first) ? '.' : '';
-            $code .= '0';
-            $is_first = false;
-        }
-
-        return $this->prefix . $code . $this->suffix;
-    }
-}
-
-class style
+class Style
 {
     // Nom du style
     var $name;
@@ -62,7 +13,7 @@ class style
     // Style name
     var $parent_style_name;
 
-    function style($myName)
+    function __construct($myName)
     {
         $this->name = $myName;
         $this->styles = array();
@@ -152,19 +103,7 @@ class style
     /*
      Ajoute des styles � un objet d�j� existant
     */
-    function addStyles($newStyles)
-    {
-        $i = count($this->styles);
-        if (is_array($newStyles)) {
-            foreach ($newStyles as $key => $value) {
-                $this->styles[$key] = $value;
-            }
-        }
-    }
 
-    /*
-     Ajoute des styles ODS � un objet
-    */
     function addOdsStyles($myOdsStyles)
     {
         $i = 0;
@@ -243,5 +182,19 @@ class style
             $i++;
         }
         if (isset($cssStyles)) $this->addStyles($cssStyles);
+    }
+
+    /*
+     Ajoute des styles ODS � un objet
+    */
+
+    function addStyles($newStyles)
+    {
+        $i = count($this->styles);
+        if (is_array($newStyles)) {
+            foreach ($newStyles as $key => $value) {
+                $this->styles[$key] = $value;
+            }
+        }
     }
 }

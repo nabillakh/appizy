@@ -1,13 +1,27 @@
 <?php
 
+namespace Appizy;
+
+use Appizy\DataStyle;
+use Appizy\Style;
+use Appizy\Sheet;
+use Appizy\Column;
+use Appizy\Cell;
+use Appizy\Row;
+use Appizy\ArrayTrait;
+use Appizy\Formula;
+
 $globaldata = "";
 
 class OpenDocumentParser
 {
+    use ArrayTrait;
+
     var $validations;
     var $fonts;
     var $styles;
     var $sheets;
+    var $formulas;
     var $formats;
 
     var $lastElement;
@@ -30,6 +44,10 @@ class OpenDocumentParser
     var $used_styles;
     var $debug;
 
+    /**
+     * @param $filenames
+     * @param $debug
+     */
     function __construct($filenames, $debug)
     {
 
@@ -38,6 +56,7 @@ class OpenDocumentParser
         $this->sheets = array();
         $this->validations = array();
         $this->formats = array();
+        $this->formulas = array();
 
         $this->used_styles = array();
 
@@ -63,11 +82,14 @@ class OpenDocumentParser
 
     /**
      * Adds a new sheet to the Parser
+     *
+     * @param $sheet_id Integer
+     * @param $sheet_name String
      */
     function addSheet($sheet_id, $sheet_name)
     {
-        $new_sheet = new sheet($sheet_id, $sheet_name);
-        $this->wb_sheets[$sheet_id] = $new_sheet;
+        $new_sheet = new Sheet($sheet_id, $sheet_name);
+        $this->sheets[$sheet_id] = $new_sheet;
     }
 
     /**
@@ -75,31 +97,32 @@ class OpenDocumentParser
      */
     function addRow($sheet_ind, $row_ind, $options)
     {
-        // Create a new row
-        $new_row = new row($sheet_ind, $row_ind, $options);
-        // Get selected sheet
-        $sheet = $this->wb_sheets[$sheet_ind];
+        $new_row = new Row($sheet_ind, $row_ind, $options);
+
+        /** @var Sheet $sheet */
+        $sheet = $this->sheets[$sheet_ind];
         $sheet->addRow($new_row);
     }
 
-    function add_cell($sheet_ind, $row_ind, $col_ind, $options)
-    {
-        // Create a new cell
-        $new_cell = new cell($sheet_ind, $row_ind, $col_ind, $options);
+    function addCell($sheet_ind, $row_ind, $col_ind, $options) {
+        $new_cell = new Cell($sheet_ind, $row_ind, $col_ind, $options);
         // Get selected row in the selected sheet
-        $sheet = $this->wb_sheets[$sheet_ind];
+        /** @var Sheet $sheet */
+        $sheet = $this->sheets[$sheet_ind];
+        /** @var Row $row */
         $row = $sheet->getRow($row_ind);
+
         $row->addCell($new_cell);
     }
 
-    function add_formula($new_formula)
+    function addFormula($new_formula)
     {
-        $this->wb_formulas[] = $new_formula;
+        $this->formulas[] = $new_formula;
     }
 
-    function add_col($sheet_ind, column $new_col)
+    function addCol($sheet_ind, column $new_col)
     {
-        $sheet = $this->wb_sheets[$sheet_ind];
+        $sheet = $this->sheets[$sheet_ind];
         $sheet->addCol($new_col);
     }
 
@@ -140,7 +163,7 @@ class OpenDocumentParser
 
             foreach ($sheet['column'] as $curCOLI => $col) {
                 $this->parser_debug("New col parsed:" . $curCOLI);
-                $tempcol = new column($curCOLI);
+                $tempcol = new Column($curCOLI);
                 //$this->debug = TRUE;
                 //$this->parser_debug("********** NEW COL".$curCOLI);
 
@@ -156,7 +179,7 @@ class OpenDocumentParser
                         $tempcol->col_set_default_cell_style($col['attrs']['TABLE:DEFAULT-CELL-STYLE-NAME']);
                     }
                 }
-                $this->add_col($cS, $tempcol);
+                $this->addCol($cS, $tempcol);
             }
 
             foreach ($sheet['rows'] as $cR => $row) {
@@ -194,6 +217,7 @@ class OpenDocumentParser
                                     $cell_options['style'] = strtolower($default_style);
                                 }
 
+
                             }
                             if (array_key_exists('OFFICE:VALUE', $cell['attrs']))
                                 $cell_options['value_attr'] = htmlentities($cell['attrs']['OFFICE:VALUE'], ENT_QUOTES, "UTF-8");
@@ -207,11 +231,11 @@ class OpenDocumentParser
                             if (array_key_exists("TABLE:FORMULA", $cell['attrs'])) {
                                 $crude_formula = $cell['attrs']['TABLE:FORMULA'];
 
-                                $cell_formula = new formula(array($cS, $cR, $cC), $crude_formula, $cS, $sheets_name);
+                                $cell_formula = new Formula(array($cS, $cR, $cC), $crude_formula, $cS, $sheets_name);
 
                                 if ($cell_formula->formula_isprintable()) {
                                     // If formula is printable
-                                    $this->add_formula($cell_formula);
+                                    $this->addFormula($cell_formula);
 
                                 }
                                 // Even if not printable, cell still considered as "output"
@@ -231,13 +255,12 @@ class OpenDocumentParser
                             $cell_options['annotation'] = $cell['annotation'];
                         }
 
-                        $this->add_cell($cS, $cR, $cC, $cell_options);
+                        $this->addCell($cS, $cR, $cC, $cell_options);
                     }
                 }
             }
         }
     }
-
 
     function parse($data)
     {
@@ -264,11 +287,11 @@ class OpenDocumentParser
         } elseif ($cTagName == 'style:style') {
             $this->lastElement = $cTagName;
 
-            $id = array_attribute($attrs, 'STYLE:NAME');
+            $id = self::array_attribute($attrs, 'STYLE:NAME');
 
-            $new_style = new style(strtolower($id));
-            $new_style->data_style_name = array_attribute($attrs, 'STYLE:DATA-STYLE-NAME');
-            $new_style->parent_style_name = strtolower(array_attribute($attrs, 'STYLE:PARENT-STYLE-NAME'));
+            $new_style = new Style(strtolower($id));
+            $new_style->data_style_name = self::array_attribute($attrs, 'STYLE:DATA-STYLE-NAME');
+            $new_style->parent_style_name = strtolower(self::array_attribute($attrs, 'STYLE:PARENT-STYLE-NAME'));
 
             $this->currentStyle = $new_style;
 
@@ -409,7 +432,7 @@ class OpenDocumentParser
             global $globaldata;
 
             $class = "";
-            if ($style_name = strtolower(array_attribute($attrs, 'TEXT:STYLE-NAME'))) {
+            if ($style_name = strtolower(self::array_attribute($attrs, 'TEXT:STYLE-NAME'))) {
 
                 $class = ' class="' . $style_name . '" ';
                 $this->used_styles[] = $style_name;
@@ -422,7 +445,7 @@ class OpenDocumentParser
 
             global $globaldata;
 
-            if ($style_name = strtolower(array_attribute($attrs, 'TEXT:STYLE-NAME'))) {
+            if ($style_name = strtolower(self::array_attribute($attrs, 'TEXT:STYLE-NAME'))) {
 
                 $class = ' class="' . strtolower($style_name) . '" ';
                 $this->used_styles[] = $style_name;
@@ -442,9 +465,9 @@ class OpenDocumentParser
             // Contenttag to prefix
             $this->new_contenttag('data-style-prefix');
 
-            $id = array_attribute($attrs, 'STYLE:NAME');
+            $id = self::array_attribute($attrs, 'STYLE:NAME');
 
-            $this->currentDataStyle = new data_style($id);
+            $this->currentDataStyle = new DataStyle($id);
 
         } elseif (isset($this->currentDataStyle)) {
             /**
@@ -455,8 +478,8 @@ class OpenDocumentParser
                 // Format of the number itself
                 $data_style = $this->currentDataStyle;
 
-                $data_style->min_int_digit = intval(array_attribute($attrs, 'NUMBER:MIN-INTEGER-DIGITS'));
-                $data_style->decimal_places = intval(array_attribute($attrs, 'NUMBER:DECIMAL-PLACES'));
+                $data_style->min_int_digit = intval(self::array_attribute($attrs, 'NUMBER:MIN-INTEGER-DIGITS'));
+                $data_style->decimal_places = intval(self::array_attribute($attrs, 'NUMBER:DECIMAL-PLACES'));
 
                 $this->currentDataStyle = $data_style;
 
@@ -465,8 +488,8 @@ class OpenDocumentParser
 
             } elseif ($cTagName == 'style:map') {
                 // Mapping of the DataStyle
-                $condition = array_attribute($attrs, 'STYLE:CONDITION');
-                $apply_style_name = array_attribute($attrs, 'STYLE:APPLY-STYLE-NAME');
+                $condition = self::array_attribute($attrs, 'STYLE:CONDITION');
+                $apply_style_name = self::array_attribute($attrs, 'STYLE:APPLY-STYLE-NAME');
 
                 $data_style = $this->currentDataStyle;
 
@@ -557,7 +580,7 @@ class OpenDocumentParser
 
         // Filters HTML tags
         $escape_tags = array('<hr>', '&nbsp;', "</span>", "</p>");
-        $data = html_filter($data, $escape_tags);
+        $data = self::html_filter($data, $escape_tags);
 
         if ($globaldata != "") {
             $globaldata = $globaldata . $data;
@@ -566,7 +589,7 @@ class OpenDocumentParser
         }
 
         $c_container = (!empty($this->contenttag_stack)) ?
-            $c_container = endc($this->contenttag_stack) : "";
+            $c_container = self::endc($this->contenttag_stack) : "";
 
         if ($c_container == 'table:table-cell') {
 
@@ -588,7 +611,6 @@ class OpenDocumentParser
         }
     }
 
-
     function new_contenttag($content_tag)
     {
         // Add the new tag to the stack
@@ -598,38 +620,40 @@ class OpenDocumentParser
         $globaldata = "";
     }
 
-    // Pour les colonnes
     function getColDefaultCellStyle($sheet, $col)
     {
+        /*
         if (array_key_exists($sheet, $this->sheets))
             if (array_key_exists($col, $this->sheets[$sheet]['column']))
                 if (array_key_exists("TABLE:DEFAULT-CELL-STYLE-NAME", $this->sheets[$sheet]['column'][$col]['attrs']))
                     return $this->sheets[$sheet]['column'][$col]['attrs']["TABLE:DEFAULT-CELL-STYLE-NAME"];
+        */
     }
 
-}
+    static function html_filter($str_in, $escape_tags = array())
+    {
 
-function html_filter($str_in, $escape_tags = array())
-{
+        $tag = array_shift($escape_tags);
 
-    $tag = array_shift($escape_tags);
-
-    if ($tag) {
-        $peaces = explode($tag, $str_in);
-        foreach ($peaces as $key => $peace) {
-            $peaces[$key] = html_filter($peace, $escape_tags);
+        if ($tag) {
+            $peaces = explode($tag, $str_in);
+            foreach ($peaces as $key => $peace) {
+                $peaces[$key] = self::html_filter($peace, $escape_tags);
+            }
+            $str_out = implode($tag, $peaces);
+        } else {
+            $str_out = htmlentities($str_in, ENT_QUOTES, "UTF-8");
         }
-        $str_out = implode($tag, $peaces);
-    } else {
-        $str_out = htmlentities($str_in, ENT_QUOTES, "UTF-8");
+
+        return $str_out;
     }
 
-    return $str_out;
+    static function endc($array)
+    {
+        return end($array);
+    }
+
 }
 
-function endc($array)
-{
-    return end($array);
-}
 
 

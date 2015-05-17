@@ -14,7 +14,7 @@ $appDir = $_POST['app_id'] ? 'tmp/' . $_POST['app_id'] . '/' : 'tmp';
 $sourceFile = $_POST['filename'];
 
 $command = "cd ../.. & ";
-$command .= "php -f appizy/Appizy/src/Appizy.php 'htdocs/" . $appDir . $sourceFile . "'";
+$command .= "./bin/console appizy 'htdocs/" . $appDir . $sourceFile . "'";
 
 passthru($command, $status);
 
