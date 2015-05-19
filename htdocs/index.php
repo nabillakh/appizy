@@ -64,6 +64,9 @@
                         </div>
                     </div>
                 </div>
+                <?php if (getenv('GG_FORM')): ?>
+                    <p><span class="glyphicon glyphicon-bullhorn"></span> <a href="<?php echo getenv('GG_FORM') ?>" target="_blank">Give some feedback or report a bug</a></p>
+                <?php endif ?>
             </div>
             <div role="tabpanel" class="tab-pane" id="tab-faq">
                 <h4>What is the biggest file size Appizy can convert?</h4>
@@ -85,11 +88,12 @@
                 </p>
 
             </div>
+
         </div>
     </div>
     <div class="row">
         <div class="col-md-12">
-            <h4>How does this works?</h4>
+            <h4>How does this work?</h4>
 
             <p>Appizy converts your spreadsheet into a web-calculator that you can share and reuse on Internet. Create
                 your
